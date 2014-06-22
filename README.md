@@ -1,6 +1,6 @@
 # Technology Readiness Tool Documentation
 
-Technology Readiness Tool (TRT) is a Java web application that stores information about resources used for online testing 
+Technology Readiness Tool (TRT) is a Java web application that stores information about resources used for online testing
 in schools.
 
 ## What is included
@@ -84,28 +84,53 @@ emailService* properties control how the system generates and sends emails.
 
 ## Tomcat Configuration
 
-## Properties files
+### Properties files
 
 The properties files described in the Configuration section can be outside of the application packages. This can be configured in Tomcat by setting a shared loader location for adding files to deployed application’s classpath. See Tomcat’s documentation about the shared loader and the ‘shared.loader’ property in the [tomcat_home]/conf/catalina.properties file.
 
-## Database Connection Pool
+### Database Connection Pool
 
-The applications require a database connection pool in JNDI. This is defined in Tomcat’s context.xml file.
+The applications require a database connection pool in JNDI.
+
+#### JDBC Driver
+
+The connection pool requires a JDBC driver. Download the [MySQL Connection/J](http://dev.mysql.com/downloads/connector/j/) archive. The JDBC driver is packaged as a JAR. Copy the 'mysql-connector-java-[version]-bin.jar' to the [tomcat_home]/lib directory.
+
+#### Defining the Connection Pool
+
+Add a resource element to Tomcat’s [tomcat_home]/conf/context.xml file.
 
 - [db_username]: The username of a user defined in the MySQL server.
 - [db_password]: The password of the MySQL user.
-- [schema_name]: The schema name that has the tables for the readiness application. This should be ‘core’. References to other schemas need to be prefixed in the query.
+- [schema_name]: The schema name that has the tables for the readiness application. This should be 'core'. References to other schemas need to be prefixed in the query.
 
 ```xml
     <Resource auth="Container"
       driverClassName="com.mysql.jdbc.Driver"
       name="core_connection"
-      username=“[db_username]”
-      password=“[db_password]“
+      username="[db_username]"
+      password="[db_password]"
       type="javax.sql.DataSource"
-      url="jdbc:mysql://localhost:3306/[schema_name]“
+      url="jdbc:mysql://localhost:3306/[schema_name]"
       validationQuery="/* ping */" />
 ```
 
 ## Database
-Execute the database script to create the required tables for the application. The script is ‘database.sql’. The application requires three schemas to run: core, core_batch and readiness. The core schema contains organization, device and consortia information. The core_batch schema has the tables required for dependencies on Quartz and Spring Batch. The readiness schema has tables for snapshot reporting data.
+Execute the database script to create the required tables for the application. The script is 'database.sql'. The application requires three schemas to run: core, core_batch and readiness. The core schema contains organization, device and consortia information. The core_batch schema has the tables required for dependencies on Quartz and Spring Batch. The readiness schema has tables for snapshot reporting data.
+
+### MySQL Configuration
+
+Enable case insensitive table names for queries. With this option MySQL will store all tables in lowercase and queries can reference tables in either uppercase or lowercase. Example my.cnf:
+```properties
+lower_case_table_names=1
+```
+
+## Developer Mode
+
+### Logging In
+
+The database script creates a single user with the username 'ready_admin'. The application has two authentication modes, dev and cas. The default is dev. This allows authentication for any valid username without a password. Enabling 'cas' mode will force the application to use a [CAS](http://www.jasig.org/cas) instance for authenticating users. See [authentication properties](#authentication-configuration) section for the required configuration values when using CAS.
+
+### Struts
+
+Struts also supports a developer mode. This is enabled by defining a constant in either a struts-plugin.xml or struts.xml. See the Struts [documentation](http://struts.apache.org/release/2.3.x/docs/devmode.html) for more information.
