@@ -1,5 +1,9 @@
 # Technology Readiness Tool Documentation
 
+This project is long **depreciated**. It is for reference only at this point. Pearson VUE did this for a research grant I believe and I did some work on it for Measurement, Inc. and them jointly. It was interesting for its time.
+
+--
+
 Technology Readiness Tool (TRT) is a Java web application that stores information about resources used for online testing
 in schools.
 
